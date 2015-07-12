@@ -1,4 +1,7 @@
 context/context
+cube/vertex/vertex
+
+config.mk
 
 *.swp
 *.swo

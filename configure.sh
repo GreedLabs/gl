@@ -1,4 +1,4 @@
-cat << EOF > ./config.mk
+cat << EOF > ./make/config.mk
 ABS_PATH = $PWD
 
 CC = clang++

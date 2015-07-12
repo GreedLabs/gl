@@ -1,6 +1,6 @@
-include ../config.mk
+include ../make/config.mk
 
 TARGET = context
 SRC    = main.cc
 
-include ../build.mk
+include ../make/build.mk
