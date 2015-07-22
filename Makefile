@@ -1,6 +1,6 @@
 include make/config.mk
 
-TARGETS = context.proj cube.proj
+TARGETS = context.proj cube.proj transformations.proj
 
 include make/recursive.mk
 

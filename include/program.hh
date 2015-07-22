@@ -19,10 +19,7 @@ struct Program: public GlObject {
   int uniform(const char *name) const;
 
   static ProgramPtr link(const std::vector<ShaderPtr> &shaders);
-
 };
-
-#include <iostream>
 
 inline void intrusive_ptr_add_ref(Program *p) {
   ++(p->ref_count);
