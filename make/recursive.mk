@@ -1,4 +1,3 @@
-
 MAKES   = $(TARGETS:.proj=.mk)
 CLEANS  = $(TARGETS:.proj=.cl)
 

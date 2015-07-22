@@ -22,7 +22,7 @@ const char* fragment_shader =
   "#version 330\n"
   "out vec4 color;"
 
-  "void main () {"
+  "void main() {"
   "  color = vec4(0.752, 0.224, 0.168, 1.0);"
   "}";
 
@@ -134,6 +134,6 @@ void render(GLFWwindow *w, ProgramPtr p) {
 }
 
 void cleanup() {
-  // glDeleteBuffers(1, &vbo);
-  // glDeleteVertexArrays(1, &vao);
+  glDeleteBuffers(1, &vbo);
+  glDeleteVertexArrays(1, &vao);
 }

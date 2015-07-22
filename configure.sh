@@ -3,7 +3,7 @@ ABS_PATH = $PWD
 
 CC = clang++
 
-CPPFLAGS = -std=c++1y -pedantic -Wall -Wextra -Werror
+CPPFLAGS = -std=c++1y -pedantic -Wall -Wextra -Werror -g3
 LDLIBS = -lGL -lepoxy -lglfw -lm -lpng
 
 CPPFLAGS += -I ./include
