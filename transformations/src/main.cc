@@ -125,6 +125,8 @@ void render(GLFWwindow *w, EntityPtr e) {
   double prev_frame = glfwGetTime();
   double time = 0;
 
+  e->model = glm::translate(e->model, glm::vec3(0, 0, -2));
+
   do {
 
     double curr = glfwGetTime();

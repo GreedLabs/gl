@@ -7,7 +7,10 @@ Entity::Entity(unsigned id): GlObject(id)
 {
   projection = glm::perspective(45.0f, (float) (SCREEN_WIDTH) / SCREEN_HEIGHT,
                                 0.1f, 100.0f);
-  view = glm::lookAt(glm::vec3(0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+  view = glm::lookAt(
+      glm::vec3(0, 0, 0),
+      glm::vec3(0, 0, -1),
+      glm::vec3(0, 1, 0));
 }
 
 EntityPtr Entity::make_entity(ProgramPtr p) {
