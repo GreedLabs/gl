@@ -93,7 +93,6 @@ int main() {
 }
 
 unsigned vao, vbo;
-mat4 model, view, projection;
 
 void run(GLFWwindow *w) {
 
@@ -135,7 +134,10 @@ void render(GLFWwindow *w, EntityPtr e) {
     time += delta;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    e->update(time, delta);
+    mat4 rotated = rotate(e->model,
+                          (float) (time * 45.0f * M_PI / 180),
+                          glm::vec3(0.0f, 1.0f, 0.0f));
+    e->update(time, delta, rotated);
 
     glfwSwapBuffers(w);
     glfwPollEvents();

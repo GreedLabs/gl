@@ -24,15 +24,18 @@ struct Entity: public GlObject {
                  GLenum type, size_t stride, void *start);
 
   void update(double time, double delta);
+  void update(double time, double delta, glm::mat4 model);
 
   static EntityPtr make_entity(ProgramPtr p);
 
   ProgramPtr p;
   TexturePtr t;
 
-  glm::mat4 model, view, projection;
+  glm::mat4 model;
   std::vector<unsigned> buffers;
   std::vector<size_t> buffers_sizes;
+
+  static glm::mat4 view, projection;
 };
 
 inline void intrusive_ptr_add_ref(Entity *p) {
