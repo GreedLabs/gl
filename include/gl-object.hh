@@ -5,6 +5,7 @@
 # include <epoxy/gl.h>
 # include <GLFW/glfw3.h>
 # include <boost/intrusive_ptr.hpp>
+# include <vector>
 
 typedef void (*getIv) (unsigned, GLenum, int *);
 typedef void (*getLog) (unsigned, int, int *, char *);
@@ -13,23 +14,16 @@ struct GlObject;
 using GlObjectPtr = boost::intrusive_ptr<GlObject>;
 
 struct GlObject {
-  GlObject(unsigned id): id(id), ref_count(0) {}
+  GlObject(unsigned id);
 
   static void check_errors(unsigned id, getIv iv, getLog log,
-                           int gl_status, const char *msg) {
-    int status = 0;
-    iv(id, gl_status, &status);
+                           int gl_status, const char *msg);
 
-    if (status == GL_FALSE) {
-      int info_log_len = 0;
-
-      iv(id, GL_INFO_LOG_LENGTH, &info_log_len);
-      char *str_info_log = new char[info_log_len + 1];
-      log(id, info_log_len, NULL, str_info_log);
-
-      errx(1, "%s\n%s\n", msg, str_info_log);
-    }
-  }
+  static unsigned mk_buffer(void *buffer, size_t size,
+                     GLenum target = GL_ARRAY_BUFFER,
+                     GLenum usage = GL_STATIC_DRAW);
+  static void clean_buffers();
+  static std::vector<unsigned> buffers;
 
   unsigned id;
   unsigned ref_count;

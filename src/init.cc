@@ -1,6 +1,8 @@
 #include <err.h>
 
 #include "init.hh"
+#include "gl-object.hh"
+#include "camera.hh"
 
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
@@ -26,6 +28,9 @@ GLFWwindow *glfw_init(unsigned *hints, size_t n) {
 
   glfwMakeContextCurrent(window);
 
+  glfwSetKeyCallback(window, Camera::key_callback);
+  glfwSetCursorPosCallback(window, Camera::mouse_callback);
+
   return window;
 }
 
@@ -41,5 +46,6 @@ GLFWwindow *glfw_init() {
 }
 
 void glfw_end() {
+  GlObject::clean_buffers();
   glfwTerminate();
 }

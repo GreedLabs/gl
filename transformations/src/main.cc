@@ -1,4 +1,5 @@
 #include "init.hh"
+#include "gl-object.hh"
 #include "entity.hh"
 
 using namespace std;
@@ -113,7 +114,8 @@ EntityPtr make_resources() {
   ProgramPtr p = Program::link(v);
   EntityPtr e = Entity::make_entity(p);
 
-  vbo = e->mk_buffer(vertexData, sizeof (vertexData));
+  vbo = GlObject::mk_buffer(vertexData, sizeof (vertexData));
+  e->bind_buffer(vbo, 8 * 3);
   e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
 
   return e;
@@ -137,7 +139,7 @@ void render(GLFWwindow *w, EntityPtr e) {
     mat4 rotated = rotate(e->model,
                           (float) (time * 45.0f * M_PI / 180),
                           glm::vec3(0.0f, 1.0f, 0.0f));
-    e->update(time, delta, rotated);
+    e->render(time, delta, rotated);
 
     glfwSwapBuffers(w);
     glfwPollEvents();

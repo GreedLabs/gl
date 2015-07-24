@@ -13,6 +13,7 @@ struct Shader: GlObject {
   Shader(unsigned id);
 
   static ShaderPtr compile(const char *shader_code, unsigned shader_type);
+  static ShaderPtr compile_file(const char *file, unsigned shader_type);
 };
 
 inline void intrusive_ptr_add_ref(Shader *p) {
