@@ -42,3 +42,7 @@ int Program::uniform(const char *name) const {
 
   return uniform;
 }
+
+void Program::use() {
+  glUseProgram(id);
+}

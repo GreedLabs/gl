@@ -15,7 +15,7 @@ mat4 Entity::projection = perspective(
 Entity::Entity(unsigned id, ProgramPtr p): GlObject(id), p(p)
 {
   glBindVertexArray(id);
-  glUseProgram(p->id);
+  p->use();
 }
 
 EntityPtr Entity::make_entity(ProgramPtr p) {
@@ -49,17 +49,18 @@ void Entity::render(double time, double delta) {
   render(time, delta, model);
 }
 
+#include <iostream>
 void Entity::render(double time, double delta, mat4 model) {
   (void) delta;
   (void) time;
 
-  glUseProgram(p->id);
+  glBindVertexArray(id);
+  p->use();
   const char *names[] = { "model", "view", "proj" };
   mat4 mats[] = { model, Camera::get_view(), projection };
   for (int i = 0; i < 3; ++i)
     glUniformMatrix4fv(p->uniform(names[i]), 1, 0,
                        value_ptr(mats[i]));
 
-  glBindVertexArray(id);
   glDrawArrays(GL_TRIANGLES, 0, size);
 }

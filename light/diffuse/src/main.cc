@@ -126,6 +126,10 @@ void run(GLFWwindow *w) {
   render(w, es);
 }
 
+unsigned cvao, lvao;
+unsigned vbo;
+ProgramPtr p1, p2;
+
 void make_resources(vector<EntityPtr> &es) {
   vector<ShaderPtr> v;
 
@@ -138,15 +142,10 @@ void make_resources(vector<EntityPtr> &es) {
 
   EntityPtr  e = Entity::make_entity(p);
   e->bind_buffer(vbo, 8 * 3);
-  /*int attrib = p->attrib("vp");
-  glEnableVertexAttribArray(attrib);
-  glVertexAttribPointer(attrib, 3, GL_FLOAT,
-                        GL_FALSE, sizeof (struct vertex), (void *)
-                        (3 * sizeof (float)));
-*/
+  
   e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
   e->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
-              (void *) (3 * sizeof (float)));
+                (void *) (3 * sizeof (float)));
 
   e->model = glm::translate(e->model, glm::vec3(0, 0, -2));
 
@@ -162,16 +161,12 @@ void make_resources(vector<EntityPtr> &es) {
   e = Entity::make_entity(p);
 
   e->bind_buffer(vbo, 8 * 3);
-  //attrib = p->attrib("vp");
-  //glEnableVertexAttribArray(attrib);
-  //glVertexAttribPointer(attrib, 3, GL_FLOAT,
-  //                      GL_FALSE, sizeof (struct vertex), (void *)
-  //                      (3 * sizeof (float)));
   e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
 
   e->model = glm::translate(e->model, glm::vec3(-1.0f, 0.0f, -2.0f));
 
   es.push_back(e);
+
 }
 
 void render(GLFWwindow *w, vector<EntityPtr> &es) {
@@ -190,21 +185,20 @@ void render(GLFWwindow *w, vector<EntityPtr> &es) {
     Camera::update(delta);
 
     vec3 light_pos = vec3(es[1]->model[3]);
-    glUniform3f(es[0]->p->uniform("obj_color"), 0.021f, 0.174f, 0.021f);
-    glUniform3f(es[0]->p->uniform("d.pos"), light_pos.x, light_pos.y, light_pos.z);
+    es[0]->p->use();
+    glUniform3f(es[0]->p->uniform("obj_color"),
+                0.021f, 0.174f, 0.021f);
+    glUniform3f(es[0]->p->uniform("d.pos"),
+                light_pos.x, light_pos.y, light_pos.z);
     glUniform3f(es[0]->p->uniform("d.color"), 1.0f, 1.0f, 0.0f);
 
     float angle = (float) (time * 45.0f * M_PI / 180);
-    mat4 rotated = rotate(es[0]->model,
-                          angle,
-                          glm::vec3(0.0f, 1.0f, 0.0f));
-
-    es[1]->render(time, delta);
-    es[0]->render(time, delta, rotated);
-    /*float angle = (float) (time * 45.0f * M_PI / 180);
     for (size_t i = 0; i < es.size(); ++i) {
-      es[i]->render(time, delta);
-    }*/
+      mat4 rotated = rotate(es[i]->model,
+                            angle,
+                            vec3(0.0f, 1.0f, 0.0f));
+      es[i]->render(time, delta, rotated);
+    }
 
     glfwSwapBuffers(w);
     glfwPollEvents();

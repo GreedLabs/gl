@@ -18,6 +18,8 @@ struct Program: public GlObject {
   int attrib(const char *name) const;
   int uniform(const char *name) const;
 
+  void use();
+
   static ProgramPtr link(const std::vector<ShaderPtr> &shaders);
 };
 
