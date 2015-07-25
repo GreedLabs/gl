@@ -30,7 +30,7 @@ const char* vertex_shader =
   "out vec3 FragPos;"
 
   "void main () {"
-  "  Normal = mat3(transpose(inverse(model))) * normal;"
+  "  Normal = vec3(-1, 0, 0);"
   "  FragPos = vec3(model * vec4(vp, 1.0f));"
   "  gl_Position = proj * view * model * vec4(vp, 1.0);"
   "}";
@@ -144,8 +144,8 @@ void make_resources(vector<EntityPtr> &es) {
   e->bind_buffer(vbo, 8 * 3);
   
   e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
-  e->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
-                (void *) (3 * sizeof (float)));
+  // e->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
+                //(void *) (3 * sizeof (float)));
 
   e->model = glm::translate(e->model, glm::vec3(0, 0, -2));
 

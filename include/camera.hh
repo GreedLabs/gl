@@ -23,7 +23,7 @@ struct Camera {
   static void update(double delta);
 
   static void process_translate(Direction d, double delta);
-  static void process_rotation (double x, double z);
+  static void process_rotation (double x, double y);
 
   static void update_view();
 
