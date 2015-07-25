@@ -2,6 +2,7 @@ context/context
 cube/vertex/vertex
 cube/instance/instance
 transformations/transformations
+light/diffuse/diffuse
 
 config.mk
 

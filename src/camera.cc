@@ -49,13 +49,13 @@ void Camera::update(double delta) {
 
 void Camera::mouse_callback(GLFWwindow* window,
                             double xpos, double ypos) {
-
-  int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-  if (state != GLFW_PRESS)
-    return;
-
   static bool firstMouse = true;
   static double lastX, lastY;
+
+  int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+  if (state != GLFW_PRESS && (firstMouse = true))
+    return;
+
   if (firstMouse) {
     lastX = xpos;
     lastY = ypos;

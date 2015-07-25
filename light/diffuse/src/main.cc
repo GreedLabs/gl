@@ -30,7 +30,7 @@ const char* vertex_shader =
   "out vec3 FragPos;"
 
   "void main () {"
-  "  Normal = vec3(-1, 0, 0);"
+  "  Normal = mat3(transpose(inverse(model))) * normal;"
   "  FragPos = vec3(model * vec4(vp, 1.0f));"
   "  gl_Position = proj * view * model * vec4(vp, 1.0);"
   "}";
@@ -83,23 +83,23 @@ struct vertex vertexData[] = {
   { -0.25f,  0.25f, -0.25f,  0,  0, -1 },
   {  0.25f,  0.25f, -0.25f,  0,  0, -1 },
 
-  /**********LEFT************/
-  {  0.25f,  0.25f, -0.25f, -1,  0,  0 },
-  {  0.25f, -0.25f,  0.25f, -1,  0,  0 },
-  {  0.25f, -0.25f, -0.25f, -1,  0,  0 },
+  /**********RIGHT************/
+  {  0.25f,  0.25f, -0.25f,  1,  0,  0 },
+  {  0.25f, -0.25f,  0.25f,  1,  0,  0 },
+  {  0.25f, -0.25f, -0.25f,  1,  0,  0 },
 
-  {  0.25f, -0.25f,  0.25f, -1,  0,  0 },
-  {  0.25f,  0.25f, -0.25f, -1,  0,  0 },
-  {  0.25f,  0.25f,  0.25f, -1,  0,  0 },
+  {  0.25f, -0.25f,  0.25f,  1,  0,  0 },
+  {  0.25f,  0.25f, -0.25f,  1,  0,  0 },
+  {  0.25f,  0.25f,  0.25f,  1,  0,  0 },
 
-  /**********RIGHT***********/
-  { -0.25f,  0.25f, -0.25f,  1,  0,  0 },
-  { -0.25f, -0.25f, -0.25f,  1,  0,  0 },
-  { -0.25f, -0.25f,  0.25f,  1,  0,  0 },
+  /**********LEFT***********/
+  { -0.25f,  0.25f, -0.25f, -1,  0,  0 },
+  { -0.25f, -0.25f, -0.25f, -1,  0,  0 },
+  { -0.25f, -0.25f,  0.25f, -1,  0,  0 },
 
-  { -0.25f, -0.25f,  0.25f,  1,  0,  0 },
-  { -0.25f,  0.25f,  0.25f,  1,  0,  0 },
-  { -0.25f,  0.25f, -0.25f,  1,  0,  0 },
+  { -0.25f, -0.25f,  0.25f, -1,  0,  0 },
+  { -0.25f,  0.25f,  0.25f, -1,  0,  0 },
+  { -0.25f,  0.25f, -0.25f, -1,  0,  0 },
 };
 
 void run(GLFWwindow *w);
@@ -144,8 +144,8 @@ void make_resources(vector<EntityPtr> &es) {
   e->bind_buffer(vbo, 8 * 3);
   
   e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
-  // e->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
-                //(void *) (3 * sizeof (float)));
+  e->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
+               (void *) (3 * sizeof (float)));
 
   e->model = glm::translate(e->model, glm::vec3(0, 0, -2));
 
@@ -194,9 +194,7 @@ void render(GLFWwindow *w, vector<EntityPtr> &es) {
 
     float angle = (float) (time * 45.0f * M_PI / 180);
     for (size_t i = 0; i < es.size(); ++i) {
-      mat4 rotated = rotate(es[i]->model,
-                            angle,
-                            vec3(0.0f, 1.0f, 0.0f));
+      mat4 rotated = rotate(es[i]->model, angle, vec3(0.0f, 1.0f, 0.0f));
       es[i]->render(time, delta, rotated);
     }
 
