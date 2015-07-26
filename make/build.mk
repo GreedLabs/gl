@@ -15,3 +15,4 @@ $(DIST_BLD_DIR)/%.o: $(DIST_SRC_DIR)/%.cc
 clean:
 	$(RM) $(OBJ) $(DIST_OBJ)
 	$(RM) $(TARGET)
+	$(RM) -r $(BUILD_DIR)
