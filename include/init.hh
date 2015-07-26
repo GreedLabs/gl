@@ -4,6 +4,9 @@
 #include <epoxy/gl.h>
 #include <GLFW/glfw3.h>
 
+#define SCREEN_WIDTH  800
+#define SCREEN_HEIGHT 600
+
 /*
  *  Will init glfw with the parameters in config array
  *  as well as create a new window and init the context
@@ -19,6 +22,7 @@ GLFWwindow *glfw_init(unsigned *hints, size_t n);
  *  GLFW_SAMPLES 4
  *  GLFW_CONTEXT_VERSION_MAJOR 3
  *  GLFW_CONTEXT_VERSION_MINOR 3
+ *  GLFW_RESIZABLE 0
  *  GLFW_OPENGL_PROFILE GLFW_OPENGL_CORE_PROFILE
  *
  */

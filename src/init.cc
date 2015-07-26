@@ -4,9 +4,6 @@
 #include "gl-object.hh"
 #include "camera.hh"
 
-#define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 768
-
 struct GLFW_config {
   unsigned name, value;
 };
@@ -39,6 +36,7 @@ GLFWwindow *glfw_init() {
     GLFW_SAMPLES, 4,
     GLFW_CONTEXT_VERSION_MAJOR, 3,
     GLFW_CONTEXT_VERSION_MINOR, 3,
+    GLFW_RESIZABLE, 0,
     GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE
   };
 
