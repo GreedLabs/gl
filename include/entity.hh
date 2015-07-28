@@ -11,9 +11,15 @@
 # include "texture.hh"
 # include "program.hh"
 
-struct Entity;
-using EntityPtr = boost::intrusive_ptr<Entity>;
+#include "material.hh"
 
+template <typename Mat = glm::vec3>
+struct Entity;
+
+template <typename T = glm::vec3>
+using EntityPtr = boost::intrusive_ptr<Entity<T>>;
+
+template <typename Mat>
 struct Entity: public GlObject {
   Entity(unsigned id, ProgramPtr p);
 
@@ -26,7 +32,7 @@ struct Entity: public GlObject {
   void render(double time, double delta);
   void render(double time, double delta, glm::mat4 model);
 
-  static EntityPtr make_entity(ProgramPtr p);
+  static EntityPtr<Mat> make_entity(ProgramPtr p);
 
   ProgramPtr p;
   TexturePtr t;
@@ -37,14 +43,19 @@ struct Entity: public GlObject {
 
   unsigned buffer;
   size_t size;
+  Material<Mat> m;
 
 };
 
-inline void intrusive_ptr_add_ref(Entity *p) {
+#include "entity.hxx"
+
+template <typename T>
+inline void intrusive_ptr_add_ref(Entity<T> *p) {
   ++(p->ref_count);
 }
 
-inline void intrusive_ptr_release(Entity *p) {
+template <typename T>
+inline void intrusive_ptr_release(Entity<T> *p) {
   if(!(--(p->ref_count))) {
     glDeleteVertexArrays(1, &p->id);
     delete p;

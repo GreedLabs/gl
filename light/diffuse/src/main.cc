@@ -103,8 +103,8 @@ struct vertex vertexData[] = {
 };
 
 void run(GLFWwindow *w);
-void make_resources(vector<EntityPtr> &es);
-void render(GLFWwindow *w, vector<EntityPtr> &es);
+void make_resources(vector<EntityPtr<>> &es);
+void render(GLFWwindow *w, vector<EntityPtr<>> &es);
 
 int main() {
   GLFWwindow *w = glfw_init();
@@ -121,7 +121,7 @@ void run(GLFWwindow *w) {
   glEnable(GL_CULL_FACE);
   glDepthFunc(GL_LESS);
 
-  vector<EntityPtr> es;
+  vector<EntityPtr<>> es;
   make_resources(es);
   render(w, es);
 }
@@ -130,7 +130,7 @@ unsigned cvao, lvao;
 unsigned vbo;
 ProgramPtr p1, p2;
 
-void make_resources(vector<EntityPtr> &es) {
+void make_resources(vector<EntityPtr<>> &es) {
   vector<ShaderPtr> v;
 
   v.push_back(Shader::compile(vertex_shader, GL_VERTEX_SHADER));
@@ -140,7 +140,7 @@ void make_resources(vector<EntityPtr> &es) {
 
   unsigned vbo = GlObject::mk_buffer(vertexData, sizeof (vertexData));
 
-  EntityPtr  e = Entity::make_entity(p);
+  EntityPtr<>  e = Entity<>::make_entity(p);
   e->bind_buffer(vbo, 8 * 3);
   
   e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
@@ -158,7 +158,7 @@ void make_resources(vector<EntityPtr> &es) {
                                    GL_FRAGMENT_SHADER));
 
   p = Program::link(v);
-  e = Entity::make_entity(p);
+  e = Entity<>::make_entity(p);
 
   e->bind_buffer(vbo, 8 * 3);
   e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
@@ -169,7 +169,7 @@ void make_resources(vector<EntityPtr> &es) {
 
 }
 
-void render(GLFWwindow *w, vector<EntityPtr> &es) {
+void render(GLFWwindow *w, vector<EntityPtr<>> &es) {
 
   double prev_frame = glfwGetTime();
   double time = 0;

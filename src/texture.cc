@@ -4,7 +4,9 @@
 #include <png.h>
 #include <string.h>
 
-Texture::Texture(unsigned id): GlObject(id)
+unsigned Texture::count = 0;
+
+Texture::Texture(unsigned id, unsigned unit): GlObject(id), unit(unit)
 {}
 
 TexturePtr Texture::fromFile(const char *filename,
@@ -41,5 +43,5 @@ TexturePtr Texture::fromFile(const char *filename,
 
   delete[] buffer;
 
-  return TexturePtr(new Texture(tex_id));
+  return TexturePtr(new Texture(tex_id, Texture::count++));
 }

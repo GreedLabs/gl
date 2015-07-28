@@ -8,9 +8,12 @@ struct Texture;
 using TexturePtr = boost::intrusive_ptr<Texture>;
 
 struct Texture: public GlObject {
-  Texture(unsigned id);
+  Texture(unsigned id, unsigned unit);
   static TexturePtr fromFile(const char *filename,
                              int min_mag_filter, int wrap_mode);
+  unsigned unit;
+
+  static unsigned count;
 };
 
 inline void intrusive_ptr_add_ref(Texture *p) {
