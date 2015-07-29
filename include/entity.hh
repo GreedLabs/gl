@@ -45,6 +45,8 @@ struct Entity: public GlObject {
   size_t size;
   Material<Mat> m;
 
+  // assume program was used
+  void update_mvp(glm::mat4 model);
 };
 
 #include "entity.hxx"

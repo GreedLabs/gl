@@ -55,6 +55,17 @@ void Entity<T>::render(double time, double delta) {
 }
 
 template <typename T>
+void Entity<T>::update_mvp(mat4 model) {
+
+  const char *names[] = { "model", "view", "proj" };
+  mat4 mats[]         = { model, Camera::get_view(), projection };
+
+  for (int i = 0; i < 3; ++i)
+    glUniformMatrix4fv(p->uniform(names[i]), 1, 0,
+                       value_ptr(mats[i]));
+}
+
+template <typename T>
 void Entity<T>::render(double time, double delta, mat4 model) {
   (void) delta;
   (void) time;
@@ -62,37 +73,12 @@ void Entity<T>::render(double time, double delta, mat4 model) {
   glBindVertexArray(id);
   p->use();
 
+  update_mvp(model);
+
   m.uniform(p, "m.diffuse", m.diffuse);
   m.uniform(p, "m.specular", m.specular);
 
-  const char *names[] = { "model", "view", "proj" };
-  mat4 mats[] = { model, Camera::get_view(), projection };
-  for (int i = 0; i < 3; ++i)
-    glUniformMatrix4fv(p->uniform(names[i]), 1, 0,
-                       value_ptr(mats[i]));
-
   glDrawArrays(GL_TRIANGLES, 0, size);
 }
-
 template <>
-void Entity<TexturePtr>::render(double time, double delta, mat4 model) {
-  (void) delta;
-  (void) time;
-
-  glBindVertexArray(id);
-  p->use();
-  const char *names[] = { "model", "view", "proj" };
-  mat4 mats[] = { model, Camera::get_view(), projection };
-  for (int i = 0; i < 3; ++i)
-    glUniformMatrix4fv(p->uniform(names[i]), 1, 0,
-                       value_ptr(mats[i]));
-
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, m.diffuse->id);
-  m.uniform(p, "m.diffuse", m.diffuse);
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, m.specular->id);
-  m.uniform(p, "m.specular", m.specular);
-
-  glDrawArrays(GL_TRIANGLES, 0, size);
-}
+void Entity<TexturePtr>::render(double time, double delta, mat4 model); 
