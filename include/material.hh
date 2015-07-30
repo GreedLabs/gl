@@ -11,6 +11,7 @@ template <>
 struct Material<TexturePtr> {
   TexturePtr diffuse;
   TexturePtr specular;
+  TexturePtr emission;
   float shininess;
 
   inline void uniform(ProgramPtr p, const char *attr, TexturePtr value) {

@@ -8,8 +8,7 @@
 
 Shader::Shader(unsigned id): GlObject(id) {}
 
-ShaderPtr Shader::compile(const char *shader_code, unsigned shader_type)
-{
+ShaderPtr Shader::compile(const char *shader_code, unsigned shader_type) {
   unsigned id = glCreateShader(shader_type);
   if (!id)
     errx(1, "Unable to create a shader");

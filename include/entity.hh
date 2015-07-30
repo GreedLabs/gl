@@ -23,9 +23,11 @@ template <typename Mat>
 struct Entity: public GlObject {
   Entity(unsigned id, ProgramPtr p);
 
+  void use();
   void bind_buffer(unsigned buff, size_t s,
                    GLenum target = GL_ARRAY_BUFFER);
 
+  /* assumes program was used and buffer bound */
   void set_value(const char *name, int data_size,
                  GLenum type, size_t stride, void *start);
 
@@ -45,7 +47,7 @@ struct Entity: public GlObject {
   size_t size;
   Material<Mat> m;
 
-  // assume program was used
+  /* assumes program was used */
   void update_mvp(glm::mat4 model);
 };
 

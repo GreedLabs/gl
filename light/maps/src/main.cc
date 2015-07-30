@@ -48,6 +48,7 @@ const char* fragment_shader =
   "struct Material {"
     "sampler2D diffuse;"
     "sampler2D specular;"
+    "sampler2D emission;"
     "float shininess;"
   "};"
 
@@ -60,6 +61,10 @@ const char* fragment_shader =
   "uniform vec3 view_position;"
 
   "out vec4 color;"
+
+  "float rand(vec2 v) {"
+  "  return fract(sin(dot(v.xy ,vec2(12.9898,78.233))) * 43758.5453);"
+  "}"
 
   "void main() {"
   "  vec3 ambient = d.ambient * vec3(texture(m.diffuse, TexCoord));"
@@ -75,7 +80,8 @@ const char* fragment_shader =
   "  float spec = pow(max(dot(viewDir, reflectDir), 0.0), m.shininess);"
   "  vec3 specular = specularStrength * spec * vec3(texture(m.specular , TexCoord)) * d.specular;"
 
-  "  vec3 result = ambient + diffuse + specular;"
+  "  vec3 emission = vec3(texture(m.emission, TexCoord - vec2(0, rand(vec2(specular)))));"
+  "  vec3 result = ambient + diffuse + specular + emission;"
   "  color = vec4(result, 1.0f);"
   "}";
 
@@ -160,9 +166,12 @@ void make_resources() {
                                     GL_CLAMP_TO_EDGE);
   TexturePtr ts = Texture::fromFile("assets/container_specular.png",
                                     GL_LINEAR, GL_CLAMP_TO_EDGE);
+  TexturePtr te = Texture::fromFile("assets/matrix.png",
+                                    GL_LINEAR, GL_CLAMP_TO_EDGE);
   e1->bind_buffer(vbo, 8 * 3);
   e1->m.diffuse  = td;
   e1->m.specular = ts;
+  e1->m.emission = te;
 
   e1->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
   e1->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),

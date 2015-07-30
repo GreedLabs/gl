@@ -14,10 +14,16 @@ mat4 Entity<T>::projection = perspective(
     );
 
 template <typename T>
-Entity<T>::Entity(unsigned id, ProgramPtr p): GlObject(id), p(p)
-{
-  glBindVertexArray(id);
+Entity<T>::Entity(unsigned id, ProgramPtr p): GlObject(id), p(p) {
+  use();
   p->use();
+
+  memset(&m, 0, sizeof (struct Material<T>));
+}
+
+template <typename T>
+void Entity<T>::use() {
+  glBindVertexArray(id);
 }
 
 template <typename T>
@@ -31,7 +37,7 @@ EntityPtr<T> Entity<T>::make_entity(ProgramPtr p) {
 
 template <typename T>
 void Entity<T>::bind_buffer(unsigned buff, size_t s,
-                 GLenum target) {
+                            GLenum target) {
   glBindBuffer(target, buff);
   buffer = buff;
   size = s;
@@ -39,8 +45,8 @@ void Entity<T>::bind_buffer(unsigned buff, size_t s,
 
 template <typename T>
 void Entity<T>::set_value(const char *name,
-                       int data_size, GLenum type, size_t stride,
-                       void *start) {
+                          int data_size, GLenum type, size_t stride,
+                          void *start) {
 
   int attrib = p->attrib(name);
 
@@ -75,10 +81,11 @@ void Entity<T>::render(double time, double delta, mat4 model) {
 
   update_mvp(model);
 
-  m.uniform(p, "m.diffuse", m.diffuse);
-  m.uniform(p, "m.specular", m.specular);
+  // m.uniform(p, "m.diffuse", m.diffuse);
+  // m.uniform(p, "m.specular", m.specular);
 
   glDrawArrays(GL_TRIANGLES, 0, size);
 }
+
 template <>
 void Entity<TexturePtr>::render(double time, double delta, mat4 model); 
