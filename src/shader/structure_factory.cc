@@ -17,6 +17,12 @@ StructureFactory::StructureFactory(const char *name): len(0) {
   len += len1 + len2 + len3;
 }
 
+StructureFactory::~StructureFactory() {
+  for (size_t i = 0; i < members.size(); ++i)
+    free(members);
+  free(name);
+}
+
 void StructureFactory::add_member(const char *type, const char *name) {
 
   int len1 = strlen(type);
