@@ -1,11 +1,11 @@
 #ifndef INIT_HH
-#define INIT_HH
+# define INIT_HH
 
-#include <epoxy/gl.h>
-#include <GLFW/glfw3.h>
+# include <epoxy/gl.h>
+# include <GLFW/glfw3.h>
 
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
+# define SCREEN_WIDTH  800
+# define SCREEN_HEIGHT 600
 
 /*
  *  Will init glfw with the parameters in config array

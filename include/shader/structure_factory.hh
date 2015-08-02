@@ -10,7 +10,8 @@ struct StructureFactory {
   void add_member(const char *type, const char *name);
 
   /* Will need to be freed */
-  char *generate();
+  char *generate(size_t *size);
+  bool search(char *type, char *name);
 
   size_t len;
   char *name;

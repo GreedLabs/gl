@@ -3,7 +3,6 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
-#include <string>
 #include <epoxy/gl.h>
 
 Shader::Shader(unsigned id): GlObject(id) {}
