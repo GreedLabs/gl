@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "shader/structure_factory.hh"
 
+static const char *structure_end = "};";
+
 StructureFactory::StructureFactory(const char *name): len(0) {
   if (name) {
     int len1 = sizeof ("struct ") - 1;
@@ -15,7 +17,7 @@ StructureFactory::StructureFactory(const char *name): len(0) {
     strcpy(this->name + len1, name);
     strcpy(this->name + len1 + len2, " {");
 
-    len += len1 + len2 + len3;
+    len += len1 + len2 + len3 + sizeof (structure_end) - 1;
   } else {
     this->name = NULL;
   }
@@ -57,7 +59,7 @@ char *StructureFactory::generate(size_t *size) {
   if (!name) return NULL;
 
   size_t s = strlen(name);
-  size_t len1 = sizeof ("};") - 1;
+  size_t len1 = sizeof (structure_end) - 1;
   char *code = (char *) malloc(len + len1 + 1);
   *size = len + len1;
 
@@ -67,7 +69,7 @@ char *StructureFactory::generate(size_t *size) {
     s += strlen (members[i]);
   }
 
-  strcpy(code + s, "};");
+  strcpy(code + s, structure_end);
   code[s + len1] = '\0';
 
   return code;

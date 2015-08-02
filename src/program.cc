@@ -2,6 +2,7 @@
 #include "shader.hh"
 
 #include <string>
+#include <stdio.h>
 #include <epoxy/gl.h>
 
 Program::Program(unsigned id): GlObject(id)
@@ -37,8 +38,11 @@ int Program::attrib(const char *name) const {
 
 int Program::uniform(const char *name) const {
   int uniform = glGetUniformLocation(id, name);
-  if (uniform == -1)
-    errx(1, "Uniform %s not found", name);
+  if (uniform == -1) {
+    static int first = 0;
+    if (!first && (first = 1))
+      printf("Uniform %s not found for program %d\n", name, id);
+  }
 
   return uniform;
 }

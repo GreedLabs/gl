@@ -105,6 +105,22 @@ char *ShaderFactory<TList>::generate() {
   return compose();
 }
 
+static const char *version = "#version 330\n";
+static const char *main_begin = "void main () {";
+static const char *main_end = "}";
+
+static const char *input_keyword = "in ";
+static const char *uniform_keyword = "uniform ";
+static const char *output_keyword = "out ";
+
+static size_t version_len = sizeof ("#version 330\n") - 1;
+static size_t main_begin_len = sizeof ("void main () {") - 1;
+static size_t main_end_len = sizeof ("}") - 1;
+
+static size_t input_keyword_len = sizeof ("in ") - 1;
+static size_t uniform_keyword_len = sizeof ("uniform ") - 1;
+static size_t output_keyword_len = sizeof ("out ") - 1;
+
 template <typename TList>
 char *ShaderFactory<TList>::compose() {
   size_t len1 = strlen(shader);
@@ -115,17 +131,19 @@ char *ShaderFactory<TList>::compose() {
     structs_len += structures[i]->len;
 
   for (size_t i = 0; i < inputs.size(); ++i)
-    inputs_len += strlen(inputs[i]);
+    inputs_len += strlen(inputs[i]) + input_keyword_len;
   for (size_t i = 0; i < uniforms.size(); ++i)
-    uniforms_len += strlen(uniforms[i]);
+    uniforms_len += strlen(uniforms[i]) + uniform_keyword_len;
   for (size_t i = 0; i < outputs.size(); ++i)
-    outputs_len += strlen(outputs[i]);
+    outputs_len += strlen(outputs[i]) + output_keyword_len;
   for (size_t i = 0; i < instructions.size(); ++i)
     instructions_len += strlen(instructions[i]);
 
-  char *code = (char *) calloc (1, len1 + structs_len +
-                       inputs_len + uniforms_len + outputs_len +
-                       instructions_len);
+  char *code = (char *) malloc (len1 + structs_len +
+                                inputs_len + uniforms_len +
+                                outputs_len + instructions_len +
+                                version_len + main_begin_len +
+                                main_end_len + version_len);
   const char *begin = shader;
 
   // will crash if there is no \n
@@ -137,29 +155,50 @@ char *ShaderFactory<TList>::compose() {
   size_t s = sizeof ("#version 330\n") - 1;
   strcpy(code, "#version 330\n");
 
-  size_t len = 0;
   for (size_t i = 0; i < structures.size(); ++i) {
-    size_t siz = 0;
-    char *struc = structures[i]->generate(&siz);
-    strcpy(code + s + len, struc);
+    size_t len = 0;
+    char *struc = structures[i]->generate(&len);
+    if (struc)
+      strcpy(code + s, struc);
     free(struc);
-    len += siz;
+    s += len;
+  }
+
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    strcpy(code + s, input_keyword);
+    s += input_keyword_len;
+    strcpy(code + s, inputs[i]);
+    s += strlen(inputs[i]);
+  }
+
+  for (size_t i = 0; i < uniforms.size(); ++i) {
+    strcpy(code + s, uniform_keyword);
+    s += uniform_keyword_len;
+    strcpy(code + s, uniforms[i]);
+    s += strlen(uniforms[i]);
+  }
+
+  for (size_t i = 0; i < outputs.size(); ++i) {
+    strcpy(code + s, output_keyword);
+    s += output_keyword_len;
+    strcpy(code + s, outputs[i]);
+    s += strlen(outputs[i]);
   }
 
   for (size_t i = 0; begin != shader + len1 &&
        strncmp(begin, "void main", sizeof ("void main" ) -1);
        ++begin, ++i, s++)
-    (code + s + len)[i] = *begin;
+    (code + s)[i] = *begin;
 
-  strcpy(code + s + len, "void main {");
-  s += sizeof ("void main {") - 1;
+  strcpy(code + s, main_begin);
+  s += main_begin_len;
 
   for (size_t i = 0; i < instructions.size(); ++i) {
-    strcpy(code + s + len, instructions[i]);
+    strcpy(code + s, instructions[i]);
     s += strlen(instructions[i]);
   }
 
-  strcpy(code + s + len, "}");
+  strcpy(code + s, main_end);
 
   return code;
 }
@@ -208,7 +247,7 @@ INJECTOR(void, inject_texture_coords,
     outputs.push_back(make_variable("vec2", "Tex"));
 
     instructions.push_back(
-      "TexCoord = tex;"
+      "Tex = tex;"
     );
   } else
     inputs.push_back(make_variable("vec2", "Tex"));
@@ -277,14 +316,17 @@ INJECTOR(void, inject_material_textured_ambient_equal_diffuse,
 }
 
 INJECTOR(void, inject_dl, SFP2<TList, T>::dir_light) {
-  StructureFactory *s = new StructureFactory("DirectionalLight");
-  delete structures[(int) Structures::Directional_Light];
-  structures[(int) Structures::Directional_Light] = s;
-
-  if (shader_type == GL_FRAGMENT_SHADER)
+  if (shader_type == GL_VERTEX_SHADER) {
+    outputs.push_back(make_variable("vec3", "FragPos"));
     instructions.push_back(
       "FragPos = vec3(model * vec4(vp, 1.0f));"
     );
+  } else {
+    StructureFactory *s = new StructureFactory("DirectionalLight");
+    delete structures[(int) Structures::Directional_Light];
+    structures[(int) Structures::Directional_Light] = s;
+  }
+
 }
 
 INJECTOR(void, inject_dl_ambient,

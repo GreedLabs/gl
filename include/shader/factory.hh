@@ -125,5 +125,7 @@ struct ShaderFactory {
   std::vector<const char *> instructions;
 };
 
+#include "factory.hxx"
+
 
 #endif

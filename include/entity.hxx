@@ -63,12 +63,10 @@ void Entity<T>::render(double time, double delta) {
 template <typename T>
 void Entity<T>::update_mvp(mat4 model) {
 
-  const char *names[] = { "model", "view", "proj" };
-  mat4 mats[]         = { model, Camera::get_view(), projection };
+  mat4 mvp = projection * Camera::get_view() * model;
 
-  for (int i = 0; i < 3; ++i)
-    glUniformMatrix4fv(p->uniform(names[i]), 1, 0,
-                       value_ptr(mats[i]));
+  glUniformMatrix4fv(p->uniform("model"), 1, 0, value_ptr(model));
+  glUniformMatrix4fv(p->uniform("mvp"), 1, 0, value_ptr(mvp));
 }
 
 template <typename T>
