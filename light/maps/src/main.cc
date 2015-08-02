@@ -4,6 +4,7 @@
 #include "init.hh"
 #include "entity.hh"
 #include "camera.hh"
+#include "shader/factory.hh"
 
 using namespace std;
 using namespace glm;
@@ -13,27 +14,6 @@ struct vertex {
   float nx, ny, nz;
   float u, v;
 } __attribute__ ((__packed__));
-
-const char* vertex_shader =
-  "#version 330\n"
-  "in vec3 vp;"
-  "in vec3 normal;"
-  "in vec2 tex;"
-
-  "uniform mat4 model;"
-  "uniform mat4 view;"
-  "uniform mat4 proj;"
-
-  "out vec3 Normal;"
-  "out vec3 FragPos;"
-  "out vec2 TexCoord;"
-
-  "void main () {"
-  "  Normal = mat3(transpose(inverse(model))) * normal;"
-  "  FragPos = vec3(model * vec4(vp, 1.0f));"
-  "  gl_Position = proj * view * model * vec4(vp, 1.0);"
-  "  TexCoord = tex;"
-  "}";
 
 const char* fragment_shader =
   "#version 330\n"
@@ -54,33 +34,33 @@ const char* fragment_shader =
 
   "in vec3 Normal;"
   "in vec3 FragPos;"
-  "in vec2 TexCoord;"
+  "in vec2 Tex;"
 
   "uniform Material m;"
   "uniform directional_light d;"
   "uniform vec3 view_position;"
+  "uniform float rand;"
 
   "out vec4 color;"
 
-  "float rand(vec2 v) {"
-  "  return fract(sin(dot(v.xy ,vec2(12.9898,78.233))) * 43758.5453);"
-  "}"
-
   "void main() {"
-  "  vec3 ambient = d.ambient * vec3(texture(m.diffuse, TexCoord));"
+  "  vec3 ambient = d.ambient * vec3(texture(m.diffuse, Tex));"
 
   "  vec3 norm     = normalize(Normal);"
   "  vec3 lightDir = normalize(d.pos - FragPos);"
   "  float diff    = max(dot(norm, lightDir), 0.0);"
-  "  vec3 diffuse  = d.diffuse * diff * vec3(texture(m.diffuse, TexCoord));"
+  "  vec3 diffuse  = d.diffuse * diff * vec3(texture(m.diffuse, Tex));"
 
   "  float specularStrength = 0.5f;"
   "  vec3 viewDir = normalize(view_position - FragPos);"
   "  vec3 reflectDir = reflect(-lightDir, norm);"
   "  float spec = pow(max(dot(viewDir, reflectDir), 0.0), m.shininess);"
-  "  vec3 specular = specularStrength * spec * vec3(texture(m.specular , TexCoord)) * d.specular;"
+  "  vec3 specular = specularStrength * spec * vec3(texture(m.specular , Tex)) * d.specular;"
 
-  "  vec3 emission = vec3(texture(m.emission, TexCoord - vec2(0, rand(vec2(specular)))));"
+  "  float y = Tex.y + rand;"
+  "  if (y > 1) y -= 1;"
+  "  vec3 emission = vec3(texture(m.emission, vec2(Tex.x, y)));"
+
   "  vec3 result = ambient + diffuse + specular + emission;"
   "  color = vec4(result, 1.0f);"
   "}";
@@ -154,6 +134,12 @@ EntityPtr<> e2;
 void make_resources() {
   vector<ShaderPtr> v;
 
+  ShaderFactory<TYPELIST_4(SFP::MVP, SFP::Normal,
+                           SFP::TextureCoord,
+                           SFP::DirectionalLight)>
+    factory("", GL_VERTEX_SHADER);
+  char *vertex_shader = factory.generate();
+
   v.push_back(Shader::compile(vertex_shader, GL_VERTEX_SHADER));
   v.push_back(Shader::compile(fragment_shader, GL_FRAGMENT_SHADER));
 
@@ -175,15 +161,14 @@ void make_resources() {
 
   e1->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
   e1->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
-               (void *) (offsetof(struct vertex, nx)));
+                (void *) (offsetof(struct vertex, nx)));
   e1->set_value("tex", 2, GL_FLOAT, sizeof (struct vertex),
-               (void *) (offsetof(struct vertex, u)));
+                (void *) (offsetof(struct vertex, u)));
 
   e1->model = translate(e1->model, vec3(0, 0, -1));
 
   v.clear();
-  v.push_back(Shader::compile_file("shaders/light.vertex",
-                                   GL_VERTEX_SHADER));
+  v.push_back(Shader::compile(vertex_shader, GL_VERTEX_SHADER));
   v.push_back(Shader::compile_file("shaders/light.fragment",
                                    GL_FRAGMENT_SHADER));
 
@@ -195,12 +180,14 @@ void make_resources() {
 
   e2->model = translate(e2->model, vec3(0.0f, 0.0f, 2.0f));
   // e->model = scale(e->model, vec3(0.2f));
+  free(vertex_shader);
 }
 
 void render(GLFWwindow *w) {
 
   double prev_frame = glfwGetTime();
   double time = 0;
+  double rnd = 0;
 
   do {
 
@@ -228,7 +215,8 @@ void render(GLFWwindow *w) {
     glUniform3f(e1->p->uniform("d.diffuse"), ld.x, ld.y, ld.z);
     glUniform3f(e1->p->uniform("d.specular"), 1.0f, 1.0f, 1.0f);
     glUniform3f(e1->p->uniform("view_position"), c.x, c.y, c.z);
-
+    glUniform1f(e1->p->uniform("rand"), rnd / 100);
+    cout << rnd / 100 << endl;
 
     mat4 rotated = e2->model;
 
@@ -244,6 +232,9 @@ void render(GLFWwindow *w) {
 
     e2->render(time, delta, rotated);
     e1->render(time, delta);
+
+    if (rnd >= 100) rnd = 0;
+    rnd += delta * 10;
 
     glfwSwapBuffers(w);
   } while (   glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS
