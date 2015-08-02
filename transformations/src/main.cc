@@ -81,8 +81,8 @@ struct vertex vertexData[] = {
 };
 
 void run(GLFWwindow *w);
-EntityPtr make_resources();
-void render(GLFWwindow *w, EntityPtr e);
+EntityPtr<vec3> make_resources();
+void render(GLFWwindow *w, EntityPtr<vec3> e);
 
 int main() {
   GLFWwindow *w = glfw_init();
@@ -101,18 +101,18 @@ void run(GLFWwindow *w) {
   glEnable(GL_CULL_FACE);
   glDepthFunc(GL_LESS);
 
-  EntityPtr e = make_resources();
+  EntityPtr<> e = make_resources();
   render(w, e);
 }
 
-EntityPtr make_resources() {
+EntityPtr<vec3> make_resources() {
   vector<ShaderPtr> v;
 
   v.push_back(Shader::compile(vertex_shader, GL_VERTEX_SHADER));
   v.push_back(Shader::compile(fragment_shader, GL_FRAGMENT_SHADER));
 
   ProgramPtr p = Program::link(v);
-  EntityPtr e = Entity::make_entity(p);
+  EntityPtr<> e = Entity<vec3>::make_entity(p);
 
   vbo = GlObject::mk_buffer(vertexData, sizeof (vertexData));
   e->bind_buffer(vbo, 8 * 3);
@@ -121,7 +121,7 @@ EntityPtr make_resources() {
   return e;
 }
 
-void render(GLFWwindow *w, EntityPtr e) {
+void render(GLFWwindow *w, EntityPtr<vec3> e) {
 
   double prev_frame = glfwGetTime();
   double time = 0;
