@@ -3,11 +3,18 @@ cube/vertex/vertex
 cube/instance/instance
 transformations/transformations
 light/diffuse/diffuse
+light/specular/specular
+light/phong/phong
+light/materials/materials
+light/texture/texture
+light/maps/maps
+
 
 config.mk
 
 *.swp
 *.swo
+*.swn
 *.o
 *.out
 *.a

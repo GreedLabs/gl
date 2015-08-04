@@ -22,7 +22,7 @@ const char* fragment_shader =
     "vec3 ambient;"
     "vec3 diffuse;"
     "vec3 specular;"
-    "vec3 pos;"
+    "vec3 direction;"
   "};"
 
   "struct Material {"
@@ -47,7 +47,7 @@ const char* fragment_shader =
   "  vec3 ambient = d.ambient * vec3(texture(m.diffuse, Tex));"
 
   "  vec3 norm     = normalize(Normal);"
-  "  vec3 lightDir = normalize(d.pos - FragPos);"
+  "  vec3 lightDir = normalize(-d.direction);"
   "  float diff    = max(dot(norm, lightDir), 0.0);"
   "  vec3 diffuse  = d.diffuse * diff * vec3(texture(m.diffuse, Tex));"
 
@@ -101,13 +101,20 @@ struct vertex vertexData[] = {
   { -0.25f, -0.25f,  0.25f, -1,  0,  0, 1, 0 },
   { -0.25f,  0.25f,  0.25f, -1,  0,  0, 1, 1 },
   { -0.25f,  0.25f, -0.25f, -1,  0,  0, 0, 1 },
+
+  /**********UP***********/
+  {  0.25f,  0.25f, -0.25f,  0,  1,  0, 1, 1 },
+  { -0.25f,  0.25f,  0.25f,  0,  1,  0, 0, 0 },
+  {  0.25f,  0.25f,  0.25f,  0,  1,  0, 1, 0 },
+
+  { -0.25f,  0.25f,  0.25f,  0,  1,  0, 0, 0 },
+  {  0.25f,  0.25f, -0.25f,  0,  1,  0, 1, 1 },
+  { -0.25f,  0.25f, -0.25f,  0,  1,  0, 0, 1 },
 };
 
-using EntityType = boost::variant<EntityPtr<>, EntityPtr<TexturePtr>>;
-
 void run(GLFWwindow *w);
-void make_resources();
-void render(GLFWwindow *w);
+void make_resources(vector<EntityPtr<TexturePtr>> &es);
+void render(GLFWwindow *w, vector<EntityPtr<TexturePtr>> &es);
 
 int main() {
   GLFWwindow *w = glfw_init();
@@ -124,14 +131,15 @@ void run(GLFWwindow *w) {
   glEnable(GL_CULL_FACE);
   glDepthFunc(GL_LESS);
 
-  make_resources();
-  render(w);
+  vector<EntityPtr<TexturePtr>> es;
+
+  make_resources(es);
+  render(w, es);
 }
 
-EntityPtr<TexturePtr> e1;
 EntityPtr<> e2;
 
-void make_resources() {
+void make_resources(vector<EntityPtr<TexturePtr>> &es) {
   vector<ShaderPtr> v;
 
   ShaderFactory<TYPELIST_4(SFP::MVP, SFP::Normal,
@@ -147,25 +155,28 @@ void make_resources() {
 
   unsigned vbo = GlObject::mk_buffer(vertexData, sizeof (vertexData));
 
-  e1 = Entity<TexturePtr>::make_entity(p);
   TexturePtr td = Texture::fromFile("assets/container.png", GL_LINEAR,
                                     GL_CLAMP_TO_EDGE);
   TexturePtr ts = Texture::fromFile("assets/container_specular.png",
                                     GL_LINEAR, GL_CLAMP_TO_EDGE);
   TexturePtr te = Texture::fromFile("assets/matrix.png",
                                     GL_LINEAR, GL_CLAMP_TO_EDGE);
-  e1->bind_buffer(vbo, 8 * 3);
-  e1->m.diffuse  = td;
-  e1->m.specular = ts;
-  e1->m.emission = te;
+  for (ssize_t i = 0; i < 15; ++i) {
+    EntityPtr<TexturePtr> e = Entity<TexturePtr>::make_entity(p);
+    e->bind_buffer(vbo, 10 * 3);
+    e->m.diffuse  = td;
+    e->m.specular = ts;
+    e->m.emission = te;
 
-  e1->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
-  e1->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
-                (void *) (offsetof(struct vertex, nx)));
-  e1->set_value("tex", 2, GL_FLOAT, sizeof (struct vertex),
-                (void *) (offsetof(struct vertex, u)));
+    e->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
+    e->set_value("normal", 3, GL_FLOAT, sizeof (struct vertex),
+        (void *) (offsetof(struct vertex, nx)));
+    e->set_value("tex", 2, GL_FLOAT, sizeof (struct vertex),
+        (void *) (offsetof(struct vertex, u)));
 
-  e1->model = translate(e1->model, vec3(0, 0, -1));
+    e->model = translate(e->model, vec3(-5 + i, 0, -6));
+    es.push_back(e);
+  }
 
   v.clear();
   v.push_back(Shader::compile(vertex_shader, GL_VERTEX_SHADER));
@@ -183,7 +194,7 @@ void make_resources() {
   free(vertex_shader);
 }
 
-void render(GLFWwindow *w) {
+void render(GLFWwindow *w, vector<EntityPtr<TexturePtr>> &es) {
 
   double prev_frame = glfwGetTime();
   double time = 0;
@@ -206,6 +217,7 @@ void render(GLFWwindow *w) {
     vec3 la = vec3(1, 1, 1) * vec3(0.2f);
 
     vec3 c = Camera::pos;
+
     mat4 rotated = e2->model;
 
     float angle = (float) (time * 45.0f * M_PI / 180);
@@ -215,22 +227,25 @@ void render(GLFWwindow *w) {
     rotated = rotate(rotated, angle, vec3(0, 1, 0));
     rotated = translate(rotated, position);
 
-    vec3 l = vec3(rotated[3]);
-    e1->p->use();
+    EntityPtr<TexturePtr> e = es[0];
+    e->p->use();
 
-    glUniform3f(e1->p->uniform("m.specular"), 0.633f, 0.727811f, 0.633);
-    glUniform1f(e1->p->uniform("m.shininess"), 128 * 0.6f);
+    glUniform3f(e->p->uniform("m.specular"), 0.633f, 0.7278f, 0.633);
+    glUniform1f(e->p->uniform("m.shininess"), 128 * 0.6f);
 
-    glUniform3f(e1->p->uniform("d.ambient"), la.x, la.y, la.z);
-    glUniform3f(e1->p->uniform("d.diffuse"), ld.x, ld.y, ld.z);
-    glUniform3f(e1->p->uniform("d.specular"), 1.0f, 1.0f, 1.0f);
-    glUniform3f(e1->p->uniform("view_position"), c.x, c.y, c.z);
-    glUniform1f(e1->p->uniform("rand"), rnd / 100);
+    glUniform3f(e->p->uniform("d.ambient"), la.x, la.y, la.z);
+    glUniform3f(e->p->uniform("d.diffuse"), ld.x, ld.y, ld.z);
+    glUniform3f(e->p->uniform("d.specular"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(e->p->uniform("view_position"), c.x, c.y, c.z);
+    glUniform1f(e->p->uniform("rand"), rnd / 100);
 
-    glUniform3f(e1->p->uniform("d.pos"), l.x, l.y, l.z);
+    glUniform3f(e->p->uniform("d.direction"), -0.2f, -1.0f, -0.3f);
 
-    e1->render(time, delta);
-    e2->render(time, delta, rotated);
+    for (size_t i = 0; i < es.size(); ++i) {
+      e = es[i];
+      e->render(time, delta);
+    }
+
 
     if (rnd >= 100) rnd = 0;
     rnd += delta * 10;
