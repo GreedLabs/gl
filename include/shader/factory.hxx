@@ -230,10 +230,10 @@ INJECTOR(void, inject_normal,
 
   if (shader_type == GL_VERTEX_SHADER) {
     inputs.push_back(make_variable("vec3", "normal"));
-    outputs.push_back(make_variable("vec3", "Normal"));
+    outputs.push_back(make_variable("vec3", "Norm"));
 
     instructions.push_back(
-      "Normal = mat3(transpose(inverse(model))) * normal;"
+      "Norm = mat3(transpose(inverse(model))) * normal;"
     );
   } else
     inputs.push_back(make_variable("vec3", "Normal"));
