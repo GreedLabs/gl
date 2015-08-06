@@ -137,8 +137,6 @@ void run(GLFWwindow *w) {
   render(w, es);
 }
 
-EntityPtr<> e2;
-
 void make_resources(vector<EntityPtr<TexturePtr>> &es) {
   vector<ShaderPtr> v;
 
@@ -178,19 +176,6 @@ void make_resources(vector<EntityPtr<TexturePtr>> &es) {
     es.push_back(e);
   }
 
-  v.clear();
-  v.push_back(Shader::compile(vertex_shader, GL_VERTEX_SHADER));
-  v.push_back(Shader::compile_file("shaders/light.fragment",
-                                   GL_FRAGMENT_SHADER));
-
-  p = Program::link(v);
-  e2 = Entity<>::make_entity(p);
-
-  e2->bind_buffer(vbo, 8 * 3);
-  e2->set_value("vp", 3, GL_FLOAT, sizeof (struct vertex), NULL);
-
-  e2->model = translate(e2->model, vec3(0.0f, 0.0f, 2.0f));
-  // e->model = scale(e->model, vec3(0.2f));
   free(vertex_shader);
 }
 
@@ -217,15 +202,6 @@ void render(GLFWwindow *w, vector<EntityPtr<TexturePtr>> &es) {
     vec3 la = vec3(1, 1, 1) * vec3(0.2f);
 
     vec3 c = Camera::pos;
-
-    mat4 rotated = e2->model;
-
-    float angle = (float) (time * 45.0f * M_PI / 180);
-    vec3 position = vec3(rotated[3]);
-
-    rotated = translate(rotated, -position);
-    rotated = rotate(rotated, angle, vec3(0, 1, 0));
-    rotated = translate(rotated, position);
 
     EntityPtr<TexturePtr> e = es[0];
     e->p->use();
