@@ -204,9 +204,9 @@ char *ShaderFactory<TList>::compose() {
 }
 
 #define INJECTOR(TYPE, NAME, ...)                          \
-  template<typename TList>                                  \
-  template<typename T>                                      \
-  TYPE ShaderFactory<TList>::NAME(                          \
+  template<typename TList>                                 \
+  template<typename T>                                     \
+  TYPE ShaderFactory<TList>::NAME(                         \
     typename enable_if<__VA_ARGS__>::type* \
   )
 
@@ -326,7 +326,6 @@ INJECTOR(void, inject_dl, SFP2<TList, T>::dir_light) {
     delete structures[(int) Structures::Directional_Light];
     structures[(int) Structures::Directional_Light] = s;
   }
-
 }
 
 INJECTOR(void, inject_dl_ambient,
