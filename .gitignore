@@ -9,8 +9,8 @@ proj/light/materials/materials
 proj/light/texture/texture
 proj/light/maps/maps
 
-
 config.mk
+bin
 
 *.swp
 *.swo
