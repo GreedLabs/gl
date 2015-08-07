@@ -23,8 +23,7 @@ const char* vertex_shader =
   "in vec3 normal;"
 
   "uniform mat4 model;"
-  "uniform mat4 view;"
-  "uniform mat4 proj;"
+  "uniform mat4 mvp;"
 
   "out vec3 Normal;"
   "out vec3 FragPos;"
@@ -32,7 +31,7 @@ const char* vertex_shader =
   "void main () {"
   "  Normal = mat3(transpose(inverse(model))) * normal;"
   "  FragPos = vec3(model * vec4(vp, 1.0f));"
-  "  gl_Position = proj * view * model * vec4(vp, 1.0);"
+  "  gl_Position = mvp * vec4(vp, 1.0);"
   "}";
 
 const char* fragment_shader =
