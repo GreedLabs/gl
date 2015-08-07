@@ -15,6 +15,7 @@ BUILD_DIR =_build
 DIST_SRC_DIR = \$(ABS_PATH)/src
 DIST_BLD_DIR = \$(ABS_PATH)/_build
 
-DIST_SRC = init.cc entity.cc program.cc shader.cc texture.cc gl-object.cc camera.cc
+DIST_SRC = init.cc entity.cc program.cc shader.cc texture.cc \
+           gl-object.cc camera.cc shader/structure_factory.cc
 DIST_OBJ = \$(addprefix \$(DIST_BLD_DIR)/, \$(DIST_SRC:.cc=.o))
 EOF

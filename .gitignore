@@ -9,7 +9,7 @@ proj/light/materials/materials
 proj/light/texture/texture
 proj/light/maps/maps
 
-config.mk
+make/config.mk
 bin
 
 *.swp
