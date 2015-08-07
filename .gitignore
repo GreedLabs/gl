@@ -1,13 +1,13 @@
-context/context
-cube/vertex/vertex
-cube/instance/instance
-transformations/transformations
-light/diffuse/diffuse
-light/specular/specular
-light/phong/phong
-light/materials/materials
-light/texture/texture
-light/maps/maps
+proj/context/context
+proj/cube/vertex/vertex
+proj/cube/instance/instance
+proj/transformations/transformations
+proj/light/diffuse/diffuse
+proj/light/specular/specular
+proj/light/phong/phong
+proj/light/materials/materials
+proj/light/texture/texture
+proj/light/maps/maps
 
 
 config.mk
