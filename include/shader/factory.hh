@@ -126,6 +126,7 @@ struct ShaderFactory {
 };
 
 #include "factory.hxx"
+#include "factory_injectors.hxx"
 
 
 #endif
