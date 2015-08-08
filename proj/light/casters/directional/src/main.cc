@@ -32,7 +32,7 @@ const char* fragment_shader =
     "float shininess;"
   "};"
 
-  "in vec3 Normal;"
+  "in vec3 Norm;"
   "in vec3 FragPos;"
   "in vec2 Tex;"
 
@@ -46,7 +46,7 @@ const char* fragment_shader =
   "void main() {"
   "  vec3 ambient = d.ambient * vec3(texture(m.diffuse, Tex));"
 
-  "  vec3 norm     = normalize(Normal);"
+  "  vec3 norm     = normalize(Norm);"
   "  vec3 lightDir = normalize(-d.direction);"
   "  float diff    = max(dot(norm, lightDir), 0.0);"
   "  vec3 diffuse  = d.diffuse * diff * vec3(texture(m.diffuse, Tex));"
