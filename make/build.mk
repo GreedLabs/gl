@@ -3,7 +3,11 @@ OBJ = $(addprefix $(BUILD_DIR)/, $(SRC:.cc=.o))
 all: $(TARGET)
 
 $(TARGET): $(OBJ) $(DIST_OBJ) | bin
-	$(LINK.c) -o $(TARGET) -o $(ABS_PATH)/bin/$(TARGET) $^ $(LDLIBS)
+	$(LINK.c) -o $(TARGET) $^ $(LDLIBS)
+	mkdir -p $(ABS_PATH)/bin/$(TARGET)
+	cp $(TARGET) $(ABS_PATH)/bin/$(TARGET)/
+	([ -e ./shaders ] && cp -r ./shaders $(ABS_PATH)/bin/$(TARGET)/) || true
+	([ -e ./assets ] && cp -r ./assets $(ABS_PATH)/bin/$(TARGET)/) || true
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
 	mkdir -p $(@D)
