@@ -25,13 +25,10 @@ ShaderPtr Shader::compile(const char *shader_code, unsigned shader_type) {
   return shader;
 }
 
-ShaderPtr Shader::compile_file(const char *file, unsigned shader_type) {
-
+char *get_path(const char *file) {
   static bool path_initialized = false;
   static char abs_path[1024];
   static char *abs_dir;
-
-  char *f = (char *) file;
 
   if (!path_initialized) {
     path_initialized = true;
@@ -45,6 +42,8 @@ ShaderPtr Shader::compile_file(const char *file, unsigned shader_type) {
     abs_dir = dirname(abs_path);
   }
 
+  char *f = (char *) file;
+
   if (!(file[0] == '.' && file[0] != '\0' && file[1] == '/')) {
     size_t s = strlen(abs_dir);
 
@@ -55,6 +54,13 @@ ShaderPtr Shader::compile_file(const char *file, unsigned shader_type) {
 
     f[s] = '/';
   }
+
+  return f;
+}
+
+ShaderPtr Shader::compile_file(const char *file, unsigned shader_type) {
+
+  char *f = get_path(file);
 
   std::ifstream t(f);
   std::string str((std::istreambuf_iterator<char>(t)),

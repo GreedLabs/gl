@@ -5,17 +5,20 @@
 #include <string.h>
 
 unsigned Texture::count = 0;
+char *get_path(const char *file);
 
 Texture::Texture(unsigned id, unsigned unit): GlObject(id), unit(unit)
 {}
 
-TexturePtr Texture::fromFile(const char *filename,
+TexturePtr Texture::fromFile(const char *file,
                              int min_mag_filter, int wrap_mode) {
+
+  char *f = get_path(file);
   png_image img;
   memset(&img, 0, sizeof(img));
   img.version = PNG_IMAGE_VERSION;
 
-  png_image_begin_read_from_file(&img, filename);
+  png_image_begin_read_from_file(&img, f);
 
   img.format = PNG_FORMAT_RGBA;
 
