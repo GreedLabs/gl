@@ -8,11 +8,16 @@ struct GLFW_config {
   unsigned name, value;
 };
 
+void error_callback(int error, const char* description) {
+  printf("%d: %s\n", error, description);
+}
+
 GLFWwindow *glfw_init(unsigned *hints, size_t n) {
 
   if (!glfwInit())
     errx(1, "Failed to init GLFW");
 
+  glfwSetErrorCallback(error_callback);
   struct GLFW_config *configs = (struct GLFW_config *) hints;
   for (size_t i = 0; i < n; ++i)
     glfwWindowHint(configs[i].name, configs[i].value);
