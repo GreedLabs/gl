@@ -8,6 +8,10 @@ proj/light/phong/phong
 proj/light/materials/materials
 proj/light/texture/texture
 proj/light/maps/maps
+proj/light/casters/directional/directional
+proj/light/casters/multiple_lights/multiple_lights
+proj/light/casters/point_light/point_light
+proj/light/casters/spotlight/spotlight
 
 make/config.mk
 bin
